@@ -1,0 +1,112 @@
+package com.example.myapplication
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.KeyboardType
+import com.example.simplecalculator.ui.theme.SimpleCalculatorTheme
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            SimpleCalculatorTheme {
+                CalculatorScreen()
+            }
+        }
+    }
+}
+
+@Composable
+fun CalculatorScreen() {
+    var firstNumber by remember { mutableStateOf("") }
+    var secondNumber by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf("0") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Simple Calculator",
+            style = MaterialTheme.typography.headlineLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(16.dp)
+        )
+
+        TextField(
+            value = firstNumber,
+            onValueChange = { firstNumber = it },
+            label = { Text("First Number") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = secondNumber,
+            onValueChange = { secondNumber = it },
+            label = { Text("Second Number") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(onClick = { result = calculate(firstNumber, secondNumber, "+") }) {
+                Text(text = "+")
+            }
+            Button(onClick = { result = calculate(firstNumber, secondNumber, "-") }) {
+                Text(text = "-")
+            }
+            Button(onClick = { result = calculate(firstNumber, secondNumber, "*") }) {
+                Text(text = "×")
+            }
+            Button(onClick = { result = calculate(firstNumber, secondNumber, "/") }) {
+                Text(text = "÷")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Result: $result",
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+fun calculate(first: String, second: String, operator: String): String {
+    val num1 = first.toDoubleOrNull()
+    val num2 = second.toDoubleOrNull()
+
+    if (num1 == null || num2 == null) {
+        return "Invalid input"
+    }
+
+    return when (operator) {
+        "+" -> (num1 + num2).toString()
+        "-" -> (num1 - num2).toString()
+        "*" -> (num1 * num2).toString()
+        "/" -> if (num2 != 0.0) (num1 / num2).toString() else "Cannot divide by zero"
+        else -> "Unknown operation"
+    }
+}
